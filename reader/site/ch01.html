@@ -1,0 +1,329 @@
+<title>זמן הדרקון · פרק 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bellefair&family=Frank+Ruhl+Libre:wght@400;500;700&family=Assistant:wght@400;600;700&display=swap">
+<style>
+/* Layout: одна колонка для чтения (~60 знаков), справа налево; текст как страница книги, задания — бланк экзамена ниже */
+:root {
+  --bg: #f3f1ec;          /* бумага, чуть в серый — цвет «серых господ» */
+  --paper: #fbfaf7;
+  --ink: #1f2430;
+  --muted: #6b6f7a;
+  --line: #d9d6ce;
+  --ember: #b5532a;       /* дракон: тлеющий уголь */
+  --ember-soft: #f4e3d9;
+  --good: #2f7a4f;
+  --good-soft: #e1f0e6;
+  --bad: #a83a3a;
+  --bad-soft: #f6e1e1;
+  --f-display: "Bellefair", "Frank Ruhl Libre", "David", serif;
+  --f-text: "Frank Ruhl Libre", "David", "Times New Roman", serif;
+  --f-ui: "Assistant", "Arial Hebrew", Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #12151d; --paper: #191d27; --ink: #e6e3dc; --muted: #9a9ea9; --line: #2c3240;
+  --ember: #e58a5c; --ember-soft: #3a2519; --good: #6cc492; --good-soft: #1a3326; --bad: #ec8b8b; --bad-soft: #3a1d1f;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #12151d; --paper: #191d27; --ink: #e6e3dc; --muted: #9a9ea9; --line: #2c3240;
+  --ember: #e58a5c; --ember-soft: #3a2519; --good: #6cc492; --good-soft: #1a3326; --bad: #ec8b8b; --bad-soft: #3a1d1f;
+  color-scheme: dark; }
+
+body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-size: 17px; line-height: 1.6; }
+.wrap { max-width: 42rem; margin: 0 auto; padding-inline: 16px; padding-block: 28px 64px; display: grid; gap: 28px; }
+header { display: grid; gap: 4px; }
+.eyebrow { font-size: 0.82rem; letter-spacing: 0.06em; color: var(--muted); }
+h1 { font-family: var(--f-display); font-weight: 400; font-size: clamp(2.1rem, 7vw, 2.9rem); line-height: 1.1; margin: 0; text-wrap: balance; }
+h1 .ch { color: var(--ember); }
+.meta { font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.story { background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 22px clamp(16px, 5vw, 32px); }
+.story p { font-family: var(--f-text); font-size: 1.22rem; line-height: 1.85; margin: 0 0 1em; }
+.story p:last-of-type { margin-bottom: 0; }
+.story p.quote { border-inline-start: 3px solid var(--ember); padding-inline-start: 14px; font-style: normal; color: var(--ink); }
+.nw { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: help; text-decoration: underline dotted var(--ember) 2px; text-underline-offset: 5px; }
+.nw:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+.tip { position: absolute; z-index: 5; max-width: min(20rem, calc(100vw - 32px)); background: var(--ink); color: var(--paper); font-size: 0.95rem; line-height: 1.45; padding: 8px 12px; border-radius: 6px; }
+
+.glossary { margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--line); display: grid; gap: 6px; }
+.glossary h2 { font-size: 0.82rem; letter-spacing: 0.06em; color: var(--muted); margin: 0; font-weight: 600; }
+.glossary dl { margin: 0; display: grid; gap: 4px; }
+.glossary div { display: flex; flex-wrap: wrap; gap: 0 8px; font-size: 0.95rem; }
+.glossary dt { font-weight: 700; color: var(--ember); }
+.glossary dd { margin: 0; color: var(--muted); min-width: 0; }
+
+.exam { display: grid; gap: 26px; }
+.exam > h2 { font-family: var(--f-display); font-weight: 400; font-size: 1.9rem; margin: 0; }
+section.part { display: grid; gap: 14px; }
+section.part > h3 { margin: 0; font-size: 1.1rem; display: flex; align-items: baseline; gap: 10px; }
+section.part > h3 .pts { font-size: 0.8rem; font-weight: 400; color: var(--muted); }
+.instr { margin: -8px 0 0; color: var(--muted); font-size: 0.95rem; }
+.q { display: grid; gap: 10px; padding: 14px 0; border-top: 1px solid var(--line); }
+.q-head { display: flex; gap: 10px; align-items: baseline; }
+.q-num { font-weight: 700; color: var(--ember); font-variant-numeric: tabular-nums; min-width: 1.6em; }
+.q-text { font-weight: 600; min-width: 0; }
+.opts { display: grid; gap: 6px; padding-inline-start: 2.3em; }
+.opt { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; padding: 6px 10px; border-radius: 6px; border: 1px solid transparent; }
+.opt:hover { background: var(--ember-soft); }
+.opt input { margin-top: 0.35em; accent-color: var(--ember); flex: none; }
+.opt.right { border-color: var(--good); background: var(--good-soft); }
+.opt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+.tf { display: flex; gap: 8px; flex-wrap: wrap; padding-inline-start: 2.3em; }
+.tf label { display: flex; gap: 6px; align-items: center; border: 1px solid var(--line); border-radius: 999px; padding: 4px 14px; cursor: pointer; }
+.tf input { accent-color: var(--ember); }
+.field { padding-inline-start: 2.3em; display: grid; gap: 4px; }
+.field label { font-size: 0.85rem; color: var(--muted); }
+input[type=text], textarea { font: inherit; font-family: var(--f-text); font-size: 1.08rem; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; width: 100%; box-sizing: border-box; }
+textarea { min-height: 4.5em; resize: vertical; }
+.fb { padding-inline-start: 2.3em; font-size: 0.95rem; display: grid; gap: 4px; }
+.fb .tag { font-weight: 700; }
+.fb.ok .tag { color: var(--good); }
+.fb.no .tag { color: var(--bad); }
+.fb.part .tag { color: var(--ember); }
+.fb .why { color: var(--muted); }
+.fb .fix { font-family: var(--f-text); font-size: 1.05rem; }
+
+.bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding-top: 6px; }
+.btn { font: inherit; font-weight: 700; border-radius: 6px; padding: 10px 22px; cursor: pointer; border: 1px solid var(--ember); background: var(--ember); color: var(--paper); }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); font-weight: 600; }
+.btn:disabled { opacity: 0.6; cursor: wait; }
+.score { font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.score b { font-size: 1.6rem; color: var(--ember); }
+.note { color: var(--muted); font-size: 0.88rem; }
+@media (prefers-reduced-motion: no-preference) { .fb { animation: in .25s ease-out; } @keyframes in { from { opacity: .3 } to { opacity: 1 } } }
+</style>
+
+<div class="wrap" dir="rtl" lang="he">
+  <header>
+    <div class="eyebrow">זמן הדרקון · פרק 1</div>
+    <h1><span class="ch">פרק 1:</span> החלום של הילדים</h1>
+    <div class="meta">219 מילים · קראו את הטקסט וענו על השאלות</div>
+  </header>
+
+  <article class="story" id="story">
+<p>בשבע בבוקר העיר נאות חלום כבר רצה. כולם עומדים בתחנה עם קפה ביד ומסתכלים על השעון. אף אחד לא מדבר עם אף אחד, כי אין זמן. על כל קיר תלוי שלט כחול וגדול: &quot;זמן <button type="button" class="nw" data-g="0">שחסכת</button> היום יחזור אליך מחר. בנק הזמן&quot;. ליד הבנק עוברים אנשים בבגדים <button type="button" class="nw" data-g="2">אפורים</button>. הם תמיד מחייכים, אבל אף פעם לא עוצרים. גם דנה לוי ממהרת. היא בלשית במשטרה כבר עשרים שנה, והיא לא זוכרת מתי צחקה בפעם האחרונה. אתמול בערב היא לקחה את התרופה, כמו כולם, וישנה בלי חלומות.</p>
+<p>במשרד מחכה לה תיק חדש. בפנים יש שמונה מסמכים מארבע שכונות שונות. ילדים בני שש עד שתים עשרה התעוררו באמצע הלילה וסיפרו להורים שלהם חלום. אותו חלום בדיוק. דנה קוראת את המסמך הראשון:</p>
+<p class="quote">&quot;הייתי למטה, מתחת לעיר, במקום חם ושקט. שם ישן דרקון גדול מאוד. הוא לא זז, רק העיניים שלו היו פתוחות קצת. ואז הוא דיבר אליי בשפה מוזרה, אבל הבנתי הכול. הוא סופר שעות. השעות של אמא, של אבא, של כולם. הוא אמר שמישהו לוקח אותן. הוא אמר שהוא מחכה.&quot; (נועם, בן 8, <button type="button" class="nw" data-g="1">עדות</button> במשטרה)</p>
+<p>דנה סוגרת את התיק. ילדים לא אמורים לחלום בכלל, הרי כולם שותים את התרופה. אולי לא כולם? היא פותחת שוב את התיק. על המסמך האחרון מישהו כתב ביד רק משפט אחד, בלי שם: &quot;תשאלו את מי שלא שותה&quot;. דנה מסתכלת על השעון. ופתאום, אחרי הרבה שנים, היא כבר לא ממהרת.</p>
+    <div class="glossary" id="glossary"></div>
+  </article>
+
+  <form class="exam" id="exam" novalidate>
+    <h2>שאלות</h2>
+    <div id="parts"></div>
+    <div class="bar">
+      <button class="btn" type="submit" id="check">בדיקה</button>
+      <button class="btn ghost" type="button" id="reset">להתחיל מחדש</button>
+      <div class="score" id="score" aria-live="polite"></div>
+    </div>
+    <p class="note" id="aiNote"></p>
+  </form>
+</div>
+
+<script id="data" type="application/json">{"chapter": 1, "title": "החלום של הילדים", "text": "בשבע בבוקר העיר נאות חלום כבר רצה. כולם עומדים בתחנה עם קפה ביד ומסתכלים על השעון. אף אחד לא מדבר עם אף אחד, כי אין זמן. על כל קיר תלוי שלט כחול וגדול: \"זמן שחסכת היום יחזור אליך מחר. בנק הזמן\". ליד הבנק עוברים אנשים בבגדים אפורים. הם תמיד מחייכים, אבל אף פעם לא עוצרים. גם דנה לוי ממהרת. היא בלשית במשטרה כבר עשרים שנה, והיא לא זוכרת מתי צחקה בפעם האחרונה. אתמול בערב היא לקחה את התרופה, כמו כולם, וישנה בלי חלומות.\n\nבמשרד מחכה לה תיק חדש. בפנים יש שמונה מסמכים מארבע שכונות שונות. ילדים בני שש עד שתים עשרה התעוררו באמצע הלילה וסיפרו להורים שלהם חלום. אותו חלום בדיוק. דנה קוראת את המסמך הראשון:\n\n\"הייתי למטה, מתחת לעיר, במקום חם ושקט. שם ישן דרקון גדול מאוד. הוא לא זז, רק העיניים שלו היו פתוחות קצת. ואז הוא דיבר אליי בשפה מוזרה, אבל הבנתי הכול. הוא סופר שעות. השעות של אמא, של אבא, של כולם. הוא אמר שמישהו לוקח אותן. הוא אמר שהוא מחכה.\" (נועם, בן 8, עדות במשטרה)\n\nדנה סוגרת את התיק. ילדים לא אמורים לחלום בכלל, הרי כולם שותים את התרופה. אולי לא כולם? היא פותחת שוב את התיק. על המסמך האחרון מישהו כתב ביד רק משפט אחד, בלי שם: \"תשאלו את מי שלא שותה\". דנה מסתכלת על השעון. ופתאום, אחרי הרבה שנים, היא כבר לא ממהרת.", "gloss": [{"w": "שחסכת", "g": "ש + חסכת. לחסוך = לשמור משהו (כסף, זמן) ולא לבזבז אותו"}, {"w": "עדות", "g": "מה שאדם מספר למשטרה או לשופט על מה שהוא ראה או שמע"}, {"w": "אפורים", "g": "בצבע שבין שחור ללבן, כמו שמיים לפני גשם"}], "q": {"chapter": 1, "sections": [{"title": "חלק א: שאלות אמריקאיות", "instructions": "קראו את הטקסט וסמנו את התשובה הנכונה.", "questions": [{"id": "q1", "type": "mc", "q": "באיזו שעה מתחיל הסיפור?", "options": ["בשש בבוקר", "בשבע בבוקר", "בשמונה בבוקר", "בשבע בערב"], "answer": 1, "explain": "בטקסט כתוב: \"בשבע בבוקר העיר נאות חלום כבר רצה\"."}, {"id": "q2", "type": "mc", "q": "מה יש בתיק החדש שמחכה לדנה במשרד?", "options": ["שמונה מסמכים מארבע שכונות שונות", "ארבעה מסמכים משמונה שכונות שונות", "שמונה מסמכים משכונה אחת", "שנים עשר מסמכים מארבע שכונות שונות"], "answer": 0, "explain": "בטקסט כתוב: \"בפנים יש שמונה מסמכים מארבע שכונות שונות\"."}, {"id": "q3", "type": "mc", "q": "לפי החלום של נועם, מה הדרקון עושה?", "options": ["הוא ישן ולא מדבר בכלל", "הוא לוקח את השעות של האנשים", "הוא סופר את השעות של כולם", "הוא מחפש את אמא ואבא של נועם"], "answer": 2, "explain": "נועם אומר: \"הוא סופר שעות. השעות של אמא, של אבא, של כולם\". הדרקון לא לוקח את השעות — הוא אומר שמישהו אחר לוקח אותן."}]}, {"title": "חלק ב: נכון / לא נכון", "instructions": "קבעו אם המשפט נכון או לא נכון, וצטטו מהטקסט משפט שמוכיח את התשובה.", "questions": [{"id": "q4", "type": "tf", "q": "דנה עובדת במשטרה רק שנה אחת.", "answer": false, "quote": "היא בלשית במשטרה כבר עשרים שנה", "explain": "דנה עובדת במשטרה עשרים שנה, לא שנה אחת."}, {"id": "q5", "type": "tf", "q": "כל הילדים בתיק סיפרו את אותו החלום.", "answer": true, "quote": "אותו חלום בדיוק.", "explain": "בטקסט כתוב שהילדים סיפרו להורים חלום, ואחר כך: \"אותו חלום בדיוק\"."}, {"id": "q6", "type": "tf", "q": "אתמול בלילה דנה חלמה חלום.", "answer": false, "quote": "אתמול בערב היא לקחה את התרופה, כמו כולם, וישנה בלי חלומות.", "explain": "דנה לקחה את התרופה וישנה בלי חלומות."}]}, {"title": "חלק ג: שאלות פתוחות", "instructions": "ענו במשפט שלם.", "questions": [{"id": "q7", "type": "open", "q": "למה האנשים בתחנה לא מדברים זה עם זה?", "model": "האנשים בתחנה לא מדברים זה עם זה כי אין להם זמן.", "criteria": "התשובה צריכה להגיד שאין להם זמן (כולם ממהרים). משפט שלם."}, {"id": "q8", "type": "open", "q": "בסוף הפרק כתוב שדנה \"כבר לא ממהרת\". מה אפשר להבין מזה על דנה? הסבירו למה זה חשוב.", "model": "אפשר להבין שהתיק מאוד מעניין את דנה, והמשפט \"תשאלו את מי שלא שותה\" גרם לה לעצור ולחשוב. זה חשוב כי בדרך כלל היא תמיד ממהרת, כמו כולם בעיר, ועכשיו משהו בה משתנה.", "criteria": "1) התיק או המשפט על המסמך האחרון מעניין אותה / גרם לה לעצור ולחשוב. 2) זה שינוי: קודם היא תמיד ממהרת, כמו כל האנשים בעיר. משפט שלם."}]}, {"title": "חלק ד: אוצר מילים", "instructions": "ענו על השאלות לפי הטקסט.", "questions": [{"id": "q9", "type": "short", "q": "מצאו בפסקה השנייה מילה שפירושה \"קמו משינה\".", "answer": ["התעוררו", "שהתעוררו"], "explain": "\"ילדים בני שש עד שתים עשרה התעוררו באמצע הלילה\" — כלומר, קמו משינה."}, {"id": "q10", "type": "mc", "q": "מה פירוש המילה \"רצה\" במשפט \"בשבע בבוקר העיר נאות חלום כבר רצה\"?", "options": ["העיר רוצה משהו", "האנשים בעיר רצים ברחוב בבוקר", "העיר גדלה מהר מאוד", "כבר בבוקר כולם בעיר עסוקים וממהרים"], "answer": 3, "explain": "זה לא ריצה ברחוב: הכוונה שכבר בבוקר כל האנשים בעיר עסוקים וממהרים. אחר כך כתוב: \"כולם עומדים בתחנה... ומסתכלים על השעון\"."}]}, {"title": "חלק ה: דקדוק", "instructions": "ענו על השאלות לפי המילים מהטקסט.", "questions": [{"id": "q11", "type": "short", "q": "מה השורש ומה הבניין של הפועל \"התעוררו\"?", "answer": ["ע-ו-ר, התפעל", "ע-ו-ר התפעל", "ע.ו.ר, התפעל", "ע.ו.ר התפעל", "עור, התפעל", "עור התפעל", "שורש ע-ו-ר, בניין התפעל", "התפעל, ע-ו-ר", "התפעל ע-ו-ר"], "explain": "השורש הוא ע-ו-ר, והבניין הוא התפעל (כמו: התעוררתי, מתעורר, יתעורר)."}, {"id": "q12", "type": "short", "q": "\"דנה סוגרת את התיק\". כתבו את הפועל \"סוגרת\" בזמן עתיד, באותו גוף (היא).", "answer": ["תסגור", "תסגר", "היא תסגור", "היא תסגר"], "explain": "השורש ס-ג-ר, בניין פעל: סוגרת — היא תסגור."}]}]}}</script>
+<script>
+(() => {
+  const D = JSON.parse(document.getElementById('data').textContent);
+  const KEY = 'zman-ch' + D.chapter;
+  const $ = (s, r = document) => r.querySelector(s);
+  const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+  const NQ = /[֑-ׇ]/g;
+  const norm = s => (s || '').replace(NQ, '').replace(/[״"׳'.,:;!?()\-–—־]/g, ' ').replace(/\s+/g, ' ').trim();
+  const skel = s => norm(s).split(' ').map(w => w.replace(/ך/g,'כ').replace(/ם/g,'מ').replace(/ן/g,'נ').replace(/ף/g,'פ').replace(/ץ/g,'צ').replace(/(?!^)[וי]/g, '')).join(' ');
+  const noArt = s => s.split(' ').map(w => w.length > 2 && w[0] === 'ה' ? w.slice(1) : w).join(' ');
+
+  // glossary + tooltips
+  const gl = $('#glossary');
+  if (D.gloss.length) {
+    gl.append(el('h2', null, 'מילים חדשות'));
+    const dl = el('dl');
+    D.gloss.forEach(g => { const d = el('div'); d.append(el('dt', null, g.w), el('dd', null, g.g)); dl.append(d); });
+    gl.append(dl);
+  } else gl.hidden = true;
+  let tip;
+  document.addEventListener('click', e => {
+    const b = e.target.closest('.nw');
+    tip?.remove(); tip = null;
+    if (!b) return;
+    tip = el('div', 'tip', D.gloss[+b.dataset.g].g);
+    tip.setAttribute('role', 'tooltip');
+    document.body.append(tip);
+    const r = b.getBoundingClientRect();
+    const left = Math.max(16, Math.min(r.right - tip.offsetWidth, innerWidth - tip.offsetWidth - 16));
+    tip.style.top = (scrollY + r.bottom + 6) + 'px';
+    tip.style.left = (scrollX + left) + 'px';
+  });
+
+  // questions
+  const parts = $('#parts');
+  let n = 0;
+  const all = [];
+  D.q.sections.forEach(sec => {
+    const s = el('section', 'part');
+    const h = el('h3', null, sec.title);
+    s.append(h);
+    if (sec.instructions) s.append(el('p', 'instr', sec.instructions));
+    sec.questions.forEach(q => {
+      n++; all.push(q);
+      const box = el('div', 'q'); box.id = 'box-' + q.id;
+      const head = el('div', 'q-head');
+      head.append(el('span', 'q-num', n + '.'), el('span', 'q-text', q.q));
+      box.append(head);
+      if (q.type === 'mc') {
+        const o = el('div', 'opts');
+        q.options.forEach((t, i) => {
+          const l = el('label', 'opt'); l.id = `${q.id}-l${i}`;
+          const r = el('input'); r.type = 'radio'; r.name = q.id; r.value = i; r.id = `${q.id}-o${i}`;
+          l.append(r, el('span', null, t)); o.append(l);
+        });
+        box.append(o);
+      } else if (q.type === 'tf') {
+        const t = el('div', 'tf');
+        [['true', 'נכון'], ['false', 'לא נכון']].forEach(([v, lab]) => {
+          const l = el('label'); const r = el('input'); r.type = 'radio'; r.name = q.id; r.value = v; r.id = `${q.id}-${v}`;
+          l.append(r, el('span', null, lab)); t.append(l);
+        });
+        const f = el('div', 'field');
+        const lab = el('label', null, 'ציטוט מהטקסט שמוכיח:'); lab.htmlFor = q.id + '-quote';
+        const inp = el('input'); inp.type = 'text'; inp.id = q.id + '-quote'; inp.autocomplete = 'off';
+        f.append(lab, inp);
+        box.append(t, f);
+      } else {
+        const f = el('div', 'field');
+        const inp = q.type === 'open' ? el('textarea') : el('input');
+        if (q.type !== 'open') inp.type = 'text';
+        inp.id = q.id + '-ans'; inp.autocomplete = 'off'; inp.setAttribute('aria-label', 'תשובה');
+        f.append(inp); box.append(f);
+      }
+      const fb = el('div', 'fb'); fb.id = 'fb-' + q.id; fb.hidden = true; box.append(fb);
+      s.append(box);
+    });
+    parts.append(s);
+  });
+  const maxOf = q => q.type === 'open' ? 2 : q.type === 'tf' ? 2 : 1;
+  const MAX = all.reduce((a, q) => a + maxOf(q), 0);
+
+  // drafts
+  const form = $('#exam');
+  const save = () => { try {
+    const st = {};
+    form.querySelectorAll('input,textarea').forEach(i => { if (i.type === 'radio') { if (i.checked) st[i.name] = i.value; } else st[i.id] = i.value; });
+    localStorage.setItem(KEY, JSON.stringify(st));
+  } catch (e) {} };
+  try {
+    const st = JSON.parse(localStorage.getItem(KEY) || '{}');
+    Object.entries(st).forEach(([k, v]) => {
+      const r = form.querySelector(`input[type=radio][name="${k}"][value="${v}"]`);
+      if (r) r.checked = true; else { const i = document.getElementById(k); if (i) i.value = v; }
+    });
+  } catch (e) {}
+  form.addEventListener('input', save);
+
+  // checking
+  const showFb = (q, cls, tag, why, fix) => {
+    const fb = $('#fb-' + q.id);
+    fb.className = 'fb ' + cls; fb.replaceChildren(); fb.hidden = false;
+    fb.append(el('span', 'tag', tag));
+    if (why) fb.append(el('span', 'why', why));
+    if (fix) fb.append(el('span', 'fix', fix));
+  };
+  const textSk = skel(D.text);
+  const quoteScore = (q, s) => {
+    if (norm(s).split(' ').length < 3) return 0;
+    const sk = skel(s);
+    if (!textSk.includes(sk)) return 0;
+    const model = new Set(skel(q.quote).split(' '));
+    const hit = sk.split(' ').filter(w => model.has(w)).length;
+    return hit / Math.max(model.size, 1) >= 0.5 ? 1 : 0;
+  };
+  const local = q => {
+    if (q.type === 'mc') {
+      const c = form.querySelector(`input[name="${q.id}"]:checked`);
+      q.options.forEach((_, i) => { const l = $(`#${q.id}-l${i}`); l.classList.toggle('right', i === q.answer && !!c); l.classList.toggle('wrong', !!c && +c.value === i && i !== q.answer); });
+      if (!c) { showFb(q, 'no', 'אין תשובה', ''); return 0; }
+      const ok = +c.value === q.answer;
+      showFb(q, ok ? 'ok' : 'no', ok ? 'נכון' : 'לא נכון', q.explain);
+      return ok ? 1 : 0;
+    }
+    if (q.type === 'tf') {
+      const c = form.querySelector(`input[name="${q.id}"]:checked`);
+      const t = c && (c.value === 'true') === q.answer ? 1 : 0;
+      const qs = quoteScore(q, $('#' + q.id + '-quote').value);
+      const tot = t + qs;
+      showFb(q, tot === 2 ? 'ok' : tot ? 'part' : 'no',
+        (t ? 'המשפט ' + (q.answer ? 'נכון' : 'לא נכון') + ' ✓' : 'המשפט ' + (q.answer ? 'נכון' : 'לא נכון')) + (qs ? ' · הציטוט מתאים' : ' · ציטוט אפשרי:'),
+        qs ? q.explain : '', qs ? '' : '"' + q.quote + '"');
+      return tot;
+    }
+    if (q.type === 'short') {
+      const v = $('#' + q.id + '-ans').value;
+      const ok = !!norm(v) && q.answer.some(a => skel(a) === skel(v) || noArt(skel(a)) === noArt(skel(v)));
+      showFb(q, ok ? 'ok' : 'no', ok ? 'נכון' : 'התשובה: ' + q.answer[0], q.explain);
+      return ok ? 1 : 0;
+    }
+    return 0;
+  };
+
+  let sample = null;
+  const note = $('#aiNote');
+  note.textContent = 'שאלות פתוחות: הבדיקה נטענת…';
+  (async () => {
+    try { sample = await window.claude?.use?.('sample'); } catch (e) { sample = null; }
+    note.textContent = sample ? 'את השאלות הפתוחות בודק Claude. בבדיקה הראשונה יופיע חלון אישור.' : 'בדיקה אוטומטית של שאלות פתוחות לא זמינה כאן: תופיע תשובת מופת להשוואה.';
+  })();
+
+  const openQs = all.filter(q => q.type === 'open');
+  async function gradeOpen() {
+    const items = openQs.map(q => ({ id: q.id, question: q.q, criteria: q.criteria, model: q.model, answer: $('#' + q.id + '-ans').value.trim() }));
+    const empty = items.filter(i => !i.answer);
+    empty.forEach(i => showFb(openQs.find(q => q.id === i.id), 'no', 'אין תשובה', 'תשובת מופת:', i.model));
+    const todo = items.filter(i => i.answer);
+    if (!todo.length) return 0;
+    const fallback = () => { todo.forEach(i => showFb(openQs.find(q => q.id === i.id), 'part', 'השוו לתשובת המופת:', i.criteria, i.model)); return 0; };
+    if (!sample) return fallback();
+    todo.forEach(i => showFb(openQs.find(q => q.id === i.id), 'part', 'בודק…', ''));
+    const prompt = `אתה בוחן במבחן סיום אולפן, רמה ג'. התלמיד ענה על שאלות פתוחות לטקסט. בדוק כל תשובה:
+- score: 2 = תשובה נכונה ומלאה לפי הקריטריונים; 1 = נכונה בחלקה או חסרה; 0 = לא נכונה או לא קשורה. שגיאות לשון קטנות לא מורידות נקודות אם התוכן נכון.
+- feedback: משפט אחד או שניים בעברית פשוטה (רמה ג'), מה טוב ומה חסר. בלי תרגום לשפה אחרת.
+- fix: התשובה של התלמיד אחרי תיקון שגיאות לשון בלבד (דקדוק, כתיב, מילות יחס), או "" אם אין שגיאות.
+החזר JSON בלבד: [{"id": "...", "score": 0, "feedback": "...", "fix": "..."}]
+
+הטקסט:
+${D.text}
+
+השאלות והתשובות:
+${JSON.stringify(todo, null, 1)}`;
+    try {
+      const res = await sample.json(prompt, { modelTier: 'default' });
+      let pts = 0;
+      (Array.isArray(res) ? res : []).forEach(r => {
+        const q = openQs.find(x => x.id === r.id); if (!q) return;
+        const sc = Math.max(0, Math.min(2, +r.score || 0)); pts += sc;
+        showFb(q, sc === 2 ? 'ok' : sc ? 'part' : 'no', `${sc}/2`, r.feedback || '', r.fix ? 'תיקון: ' + r.fix : '');
+      });
+      return pts;
+    } catch (e) {
+      note.textContent = e.code === 'not_granted' ? 'הבדיקה האוטומטית לא אושרה: תופיע תשובת מופת להשוואה.' : e.code === 'rate_limited' ? 'יותר מדי בקשות. נסו שוב בעוד דקה.' : 'הבדיקה האוטומטית נכשלה: תופיע תשובת מופת להשוואה.';
+      if (e.code === 'not_granted') sample = null;
+      return fallback();
+    }
+  }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = $('#check'); btn.disabled = true;
+    let pts = all.filter(q => q.type !== 'open').reduce((a, q) => a + local(q), 0);
+    $('#score').innerHTML = '';
+    $('#score').append('ציון: ', el('b', null, String(pts)), ` / ${MAX}`, openQs.length ? ' (פתוחות בבדיקה…)' : '');
+    pts += await gradeOpen();
+    $('#score').replaceChildren('ציון: ', el('b', null, String(pts)), ` / ${MAX}`);
+    btn.disabled = false;
+  });
+  $('#reset').addEventListener('click', () => {
+    form.reset(); try { localStorage.removeItem(KEY); } catch (e) {}
+    form.querySelectorAll('.fb').forEach(f => f.hidden = true);
+    form.querySelectorAll('.opt').forEach(o => o.classList.remove('right', 'wrong'));
+    $('#score').replaceChildren();
+  });
+})();
+</script>
