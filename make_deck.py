@@ -1223,7 +1223,7 @@ css = """
 .note{font-size:18px;color:#777;margin-top:14px}
 .note .h{direction:ltr;unicode-bidi:normal}
 .ru,.note,.gi{direction:ltr}
-bdi{unicode-bidi:isolate}
+bdi{unicode-bidi:isolate;display:inline-block;max-width:100%}
 .forms{margin:14px auto;border-collapse:collapse;font-size:16px}
 .forms th,.forms td{border:1px solid #ccc;padding:5px 8px}
 .forms th{color:#888;font-weight:normal}
