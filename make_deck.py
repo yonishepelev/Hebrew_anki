@@ -1556,7 +1556,7 @@ model = genanki.Model(
      "afmt":'{{FrontSide}}<hr id="answer"><div class="he">{{Niqqud}}</div><div class="ru">{{Russian}}</div><div class="note"><span class="h">{{Note}}</span></div>{{#Forms}}{{Forms}}{{/Forms}}<div class="rank">#{{Rank}}</div>'},
     {"name":"Русский → Иврит",
      "qfmt":'<div class="ru">{{Russian}}</div>',
-     "afmt":'{{FrontSide}}<hr id="answer"><div class="he">{{Niqqud}}</div><div class="note"><span class="h">{{Note}}</span></div>{{#Forms}}{{Forms}}{{/Forms}}<div class="rank">#{{Rank}}</div>'},
+     "afmt":'{{FrontSide}}<hr id="answer"><div class="he">{{Hebrew}}</div><div class="he">{{Niqqud}}</div><div class="note"><span class="h">{{Note}}</span></div>{{#Forms}}{{Forms}}{{/Forms}}<div class="rank">#{{Rank}}</div>'},
   ], css=css)
 
 deck = genanki.Deck(DECK_ID, DECK_NAME)
