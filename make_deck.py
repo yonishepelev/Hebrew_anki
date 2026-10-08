@@ -729,7 +729,7 @@ W_MORE = [
 (699,"חתיכה","חֲתִיכָה","кусок","сущ. ж.р., мн. חֲתִיכוֹת",None),
 (700,"אתר","אֲתָר","сайт; место","сущ. м.р., мн. אֲתָרִים",None),
 (701,"נוח","נוֹחַ","удобный","прил.",None),
-(702,"חתך","חָתַךְ","резать","глагол; инф. לַחְתֹּךְ; תַּחְתֹּךְ אֶת הַבָּצָל לְקֻבִּיּוֹת — нарежь лук кубиками; הוּא חָתַךְ אֶת הָעוּגָה וְחִלֵּק לְכֻלָּם — он разрезал торт и раздал всем; הוּא חָתַךְ אֶת הָאֶצְבַּע כְּשֶׁהֵכִין סָלָט — он порезал палец, когда готовил салат; הָרְחוֹב חוֹתֵךְ אֶת הַסִּמְטָה — улица пересекает переулок; הוּא חָתַךְ אוֹתִי בַּכְּבִישׁ — он подрезал меня на дороге",("חָתַכְתִּי","חָתַךְ","חָתְכָה","אֶחְתֹּךְ","יַחְתֹּךְ","תַּחְתֹּךְ")),
+(702,"חתך","חָתַךְ","резать","глагол; инф. לַחְתֹּךְ",("חָתַכְתִּי","חָתַךְ","חָתְכָה","אֶחְתֹּךְ","יַחְתֹּךְ","תַּחְתֹּךְ")),
 (703,"צבע","צֶבַע","цвет; краска","сущ. м.р., мн. צְבָעִים",None),
 (704,"מצוין","מְצֻיָּן","отличный","прил.",None),
 (705,"צורך","צֹרֶךְ","потребность","אֵין צֹרֶךְ — нет нужды",None),
@@ -1546,6 +1546,10 @@ bdi{unicode-bidi:isolate;display:inline-block;max-width:100%}
 .st{color:#e53935}
 .nightMode .st{color:#ff7070}
 .rank{font-size:13px;color:#aaa;margin-top:18px}
+.ex{margin:12px auto 4px;max-width:95%}
+.exi{margin:8px 0}
+.exh{font-size:21px;font-family:'Noto Sans Hebrew','Arial Hebrew',sans-serif}
+.exr{font-size:16px}
 """
 model = genanki.Model(
   MODEL_ID, "Иврит ⇄ Русский (формы)",
@@ -1865,6 +1869,20 @@ HE_RUN = re.compile(r'[\u0590-\u05FF]+(?:[ ][\u0590-\u05FF]+)*[?!]?')
 def bidi(text):
     return HE_RUN.sub(lambda m: f'<bdi dir="rtl">{m.group(0)}</bdi>', text)
 
+# ───── Примеры: отдельный блок «примеры» (фраза на иврите, под ней перевод) ─────
+EX = {
+702: [("תַּחְתֹּךְ אֶת הַבָּצָל לְקֻבִּיּוֹת", "нарежь лук кубиками"),
+      ("הוּא חָתַךְ אֶת הָעוּגָה וְחִלֵּק לְכֻלָּם", "он разрезал торт и раздал всем"),
+      ("הוּא חָתַךְ אֶת הָאֶצְבַּע כְּשֶׁהֵכִין סָלָט", "он порезал палец, когда готовил салат"),
+      ("הָרְחוֹב חוֹתֵךְ אֶת הַסִּמְטָה", "улица пересекает переулок"),
+      ("הוּא חָתַךְ אוֹתִי בַּכְּבִישׁ", "он подрезал меня на дороге")],
+}
+def ex_html(r):
+    if r not in EX: return ""
+    return '<div class="ex"><div class="gt">примеры</div>' + "".join(
+        f'<div class="exi"><bdi class="exh" dir="rtl">{he}</bdi><div class="exr">{bidi(ru)}</div></div>'
+        for he, ru in EX[r]) + '</div>'
+
 def gov_html(r):
     t = GOV.get(r) or GOV.get(GOV_BASE.get(r))
     if not t: return ""
@@ -1961,7 +1979,7 @@ ONLY = {int(a) for a in sys.argv[1:]}
 assert ONLY <= {r for r,*_ in ALL}, f"нет таких номеров: {ONLY - {r for r,*_ in ALL}}"
 for r,h,n,ru,note in ALL:
     if ONLY and r not in ONLY: continue
-    deck.add_note(genanki.Note(model=model, fields=[h,mark_stress(n),bidi(ru),bidi(note),gov_html(r)+forms_html(r),str(r)],
+    deck.add_note(genanki.Note(model=model, fields=[h,mark_stress(n),bidi(ru),bidi(note),ex_html(r)+gov_html(r)+forms_html(r),str(r)],
         guid=genanki.guid_for(GUID_SEED,GUID_KEY.get(r,h),r), due=r,
         tags=[f"freq_{(r-1)//100*100+1:04d}"]+(["verb_form"] if r in VERB_FORM_RANKS else ["pron_form"] if r in PRON_FORM_RANKS else ["verb"] if r in FORMS else [])))
 _ids = sorted(ONLY)
