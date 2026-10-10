@@ -2197,19 +2197,37 @@ assert len({(h,r) for r,h,*_ in ALL}) == len(ALL)
 # Импорт поверх обновляет только их (сопоставление по GUID), прогресс не трогается.
 ONLY = {int(a) for a in sys.argv[1:]}
 assert ONLY <= {r for r,*_ in ALL}, f"нет таких номеров: {ONLY - {r for r,*_ in ALL}}"
-# Разведённые омографы: в поле Hebrew слово с огласовками (чтобы лицевые стороны различались),
-# под ним мелко — написание без огласовок (ключ GUID без "#2").
-NIQ = re.compile('[\u0591-\u05BD\u05BF-\u05C7]')
-def he_field(h, plain):
-    return h + f'<div style="font-size:30px;color:#888">{plain}</div>' if NIQ.search(h) else h
+# Разведённые омографы: в поле Hebrew крупно — без огласовок, под ним серым — частичная огласовка
+# (только знаки, которыми пара различается). HE2[rank] = ((без огл., част.) основной, (…) из SPLIT).
+HE2 = {
+ 3: (("את","אֶת"),("את","אַתְּ")), 23: (("אם","אִם"),("אם","אֵם")), 24: (("עם","עִם"),("עם","עַם")),
+ 35: (("אל","אֶל"),("אל","אַל")), 38: (("שם","שָם"),("שם","שֵם")), 132: (("אי־","אי־"),("אי","אי")),
+ 160: (("מדי","מדַי"),("מדי","מדֵי")), 176: (("חברה","חֲבֵרה"),("חברה","חֶבְרה")),
+ 263: (("שינה","שִינּה"),("שינה","שֵינה")), 308: (("חלה","חָלה"),("חלה","חַלּה")),
+ 415: (("נשק","נֶשֶק"),("נשק","נָשַק")), 564: (("מפה","מִפֹה"),("מפה","מַפָה")),
+ 609: (("ספק","סָפֵק"),("ספק","סַפָּק")), 617: (("שר","שָׁר"),("שר","שַׂר")),
+ 668: (("ראיה","ראָיה"),("ראייה","ראִייה")), 685: (("מוצא","מוצֵא"),("מוצא","מוצָא")),
+ 712: (("חבל","חֲבָל"),("חבל","חֶבֶל")), 738: (("עונה","עונֶה"),("עונה","עונָה")),
+ 770: (("עקב","עֵקֶב"),("עקב","עָקֵב")), 883: (("סמל","סֵמֶל"),("סמל","סַמָּל")),
+ 957: (("מוכר","מוכֵר"),("מוכר","מוּכָּר")), 1005: (("אילו","אִילּו"),("אילו","אֵילו")),
+ 1062: (("רשות","רְשות"),("רשות","רָשות")), 1076: (("סופר","סוֹפֵר"),("סופר","סוּפֶּר")),
+ 1097: (("אמן","אמָן"),("אמן","אמֵן")), 1105: (("חמור","חָמוּר"),("חמור","חֲמוֹר")),
+ 1125: (("נפרד","נפרַד"),("נפרד","נפרָד")), 1185: (("מראה","מראֶה"),("מראה","מראָה")),
+ 1198: (("שמן","שֶמֶן"),("שמן","שָמֵן")), 1211: (("עצב","עֶצֶב"),("עצב","עָצָב")),
+ 1234: (("קצב","קֶצֶב"),("קצב","קַצָּב")),
+}
+def he_field(r, h, i):
+    if r not in HE2: return h
+    plain, part = HE2[r][i]
+    return plain + f'<div style="font-size:30px;color:#888">{part}</div>'
 for r,h,n,ru,note in ALL:
     if ONLY and r not in ONLY: continue
-    deck.add_note(genanki.Note(model=model, fields=[he_field(h,GUID_KEY.get(r,h)),mark_stress(n),bidi(ru),bidi(note),ex_html(r)+gov_html(r)+forms_html(r),str(r)],
+    deck.add_note(genanki.Note(model=model, fields=[he_field(r,h,0),mark_stress(n),bidi(ru),bidi(note),ex_html(r)+gov_html(r)+forms_html(r),str(r)],
         guid=genanki.guid_for(GUID_SEED,GUID_KEY.get(r,h),r), due=r,
         tags=[f"freq_{(r-1)//100*100+1:04d}"]+(["verb_form"] if r in VERB_FORM_RANKS else ["pron_form"] if r in PRON_FORM_RANKS else ["verb"] if r in FORMS else [])))
 for r,key,h,n,ru,note,ex in SPLIT:
     if ONLY and r not in ONLY: continue
-    deck.add_note(genanki.Note(model=model, fields=[he_field(h,key.split("#")[0]),mark_stress(n),bidi(ru),bidi(note),ex_block(ex),str(r)],
+    deck.add_note(genanki.Note(model=model, fields=[he_field(r,h,1),mark_stress(n),bidi(ru),bidi(note),ex_block(ex),str(r)],
         guid=genanki.guid_for(GUID_SEED,key,r), due=r, tags=[f"freq_{(r-1)//100*100+1:04d}"]))
 _ids = sorted(ONLY)
 _name = "_".join(map(str, _ids)) if len(_ids) <= 6 else f"{_ids[0]}-{_ids[-1]}_{len(_ids)}cards"
