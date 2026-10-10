@@ -117,6 +117,7 @@ textarea { min-height: 4.5em; resize: vertical; }
       <div class="score" id="score" aria-live="polite"></div>
     </div>
     <p class="note" id="aiNote"></p>
+    <p class="note" id="saved" aria-live="polite"></p>
   </form>
 </div>
 
@@ -240,8 +241,9 @@ textarea { min-height: 4.5em; resize: vertical; }
     if (q.type === 'mc') {
       const c = form.querySelector(`input[name="${q.id}"]:checked`);
       q.options.forEach((_, i) => { const l = $(`#${q.id}-l${i}`); l.classList.toggle('right', i === q.answer && !!c); l.classList.toggle('wrong', !!c && +c.value === i && i !== q.answer); });
-      if (!c) { showFb(q, 'no', 'אין תשובה', ''); return 0; }
+      if (!c) { rec[q.id] = { type: 'mc', given: null, pts: 0, max: 1 }; showFb(q, 'no', 'אין תשובה', ''); return 0; }
       const ok = +c.value === q.answer;
+      rec[q.id] = { type: 'mc', given: q.options[+c.value], pts: ok ? 1 : 0, max: 1 };
       showFb(q, ok ? 'ok' : 'no', ok ? 'נכון' : 'לא נכון', q.explain);
       return ok ? 1 : 0;
     }
@@ -250,6 +252,7 @@ textarea { min-height: 4.5em; resize: vertical; }
       const t = c && (c.value === 'true') === q.answer ? 1 : 0;
       const qs = quoteScore(q, $('#' + q.id + '-quote').value);
       const tot = t + qs;
+      rec[q.id] = { type: 'tf', given: c ? c.value === 'true' : null, quote: $('#' + q.id + '-quote').value, pts: tot, max: 2 };
       showFb(q, tot === 2 ? 'ok' : tot ? 'part' : 'no',
         (t ? 'המשפט ' + (q.answer ? 'נכון' : 'לא נכון') + ' ✓' : 'המשפט ' + (q.answer ? 'נכון' : 'לא נכון')) + (qs ? ' · הציטוט מתאים' : ' · ציטוט אפשרי:'),
         qs ? q.explain : '', qs ? '' : '"' + q.quote + '"');
@@ -258,13 +261,23 @@ textarea { min-height: 4.5em; resize: vertical; }
     if (q.type === 'short') {
       const v = $('#' + q.id + '-ans').value;
       const ok = !!norm(v) && q.answer.some(a => skel(a) === skel(v) || noArt(skel(a)) === noArt(skel(v)));
+      rec[q.id] = { type: 'short', given: v, pts: ok ? 1 : 0, max: 1 };
       showFb(q, ok ? 'ok' : 'no', ok ? 'נכון' : 'התשובה: ' + q.answer[0], q.explain);
       return ok ? 1 : 0;
     }
     return 0;
   };
 
-  let sample = null;
+  let sample = null, db = null;
+  const rec = {};
+  (async () => { try { db = await window.claude?.use?.('db'); } catch (e) { db = null; } })();
+  async function saveResult(pts) {
+    if (!db) return;
+    try {
+      await db.collection('results').add({ chapter: D.chapter, at: new Date().toISOString(), score: pts, max: MAX, items: rec });
+      $('#saved').textContent = 'התוצאה נשמרה.';
+    } catch (e) { $('#saved').textContent = ''; }
+  }
   const note = $('#aiNote');
   note.textContent = 'שאלות פתוחות: הבדיקה נטענת…';
   (async () => {
@@ -276,9 +289,11 @@ textarea { min-height: 4.5em; resize: vertical; }
   async function gradeOpen() {
     const items = openQs.map(q => ({ id: q.id, question: q.q, criteria: q.criteria, model: q.model, answer: $('#' + q.id + '-ans').value.trim() }));
     const empty = items.filter(i => !i.answer);
+    empty.forEach(i => { rec[i.id] = { type: 'open', given: '', pts: 0, max: 2 }; });
     empty.forEach(i => showFb(openQs.find(q => q.id === i.id), 'no', 'אין תשובה', 'תשובת מופת:', i.model));
     const todo = items.filter(i => i.answer);
     if (!todo.length) return 0;
+    todo.forEach(i => { rec[i.id] = { type: 'open', given: i.answer, pts: null, max: 2 }; });
     const fallback = () => { todo.forEach(i => showFb(openQs.find(q => q.id === i.id), 'part', 'השוו לתשובת המופת:', i.criteria, i.model)); return 0; };
     if (!sample) return fallback();
     todo.forEach(i => showFb(openQs.find(q => q.id === i.id), 'part', 'בודק…', ''));
@@ -299,6 +314,7 @@ ${JSON.stringify(todo, null, 1)}`;
       (Array.isArray(res) ? res : []).forEach(r => {
         const q = openQs.find(x => x.id === r.id); if (!q) return;
         const sc = Math.max(0, Math.min(2, +r.score || 0)); pts += sc;
+        Object.assign(rec[q.id] || (rec[q.id] = { type: 'open', max: 2 }), { pts: sc, feedback: r.feedback || '', fix: r.fix || '' });
         showFb(q, sc === 2 ? 'ok' : sc ? 'part' : 'no', `${sc}/2`, r.feedback || '', r.fix ? 'תיקון: ' + r.fix : '');
       });
       return pts;
@@ -318,6 +334,7 @@ ${JSON.stringify(todo, null, 1)}`;
     pts += await gradeOpen();
     $('#score').replaceChildren('ציון: ', el('b', null, String(pts)), ` / ${MAX}`);
     btn.disabled = false;
+    saveResult(pts);
   });
   $('#reset').addEventListener('click', () => {
     form.reset(); try { localStorage.removeItem(KEY); } catch (e) {}
