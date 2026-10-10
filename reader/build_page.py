@@ -38,9 +38,16 @@ def build(n):
     meta, paras, q = load(n)
     tpl = (ROOT / 'page_template.html').read_text()
     words = sum(len(re.findall('[א-ת]+', p)) for p in paras)
-    text_html = '\n'.join(
-        f'<p class="quote">{mark_new(p, meta["gloss"])}</p>' if p.startswith('"') else f'<p>{mark_new(p, meta["gloss"])}</p>'
-        for p in paras)
+    def para(p):
+        m = re.match(r'^([\u05d0-\u05ea ]{2,15}):\s+(.+)$', p, re.S)
+        if p.startswith('"'):
+            return f'<p class="quote">{mark_new(p, meta["gloss"])}</p>'
+        if p.startswith('פרוטוקול'):
+            return f'<p class="doc">{html.escape(p)}</p>'
+        if m:
+            return f'<p class="line"><b>{html.escape(m.group(1))}:</b>{mark_new(m.group(2), meta["gloss"])}</p>'
+        return f'<p>{mark_new(p, meta["gloss"])}</p>'
+    text_html = '\n'.join(para(p) for p in paras)
     data = {'chapter': n, 'title': meta['title'], 'text': '\n\n'.join(paras), 'gloss': meta['gloss'], 'q': q}
     out = (tpl.replace('{{N}}', str(n))
               .replace('{{TITLE}}', html.escape(meta['title']))

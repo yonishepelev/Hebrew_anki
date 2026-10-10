@@ -7,6 +7,7 @@
 - `build_page.py N` — страница `site/chNN.html` из `texts/chNN.txt` + `chNN_questions.json` (шаблон `page_template.html`).
 - Публикация: артефакт claude.ai (capability `sample` — Claude проверяет открытые ответы; `db` — после «בדיקה» результат сохраняется в коллекцию `results`: ответы, баллы, отзывы; читать через ArtifactData list results).
   Глава 1: https://claude.ai/artifact/Hou2EWJqhUAp1mFabMdnHV
+  Глава 2: https://claude.ai/artifact/WVbeR1u73kx4i5yo77ZwBg
 
 Цикл главы: автор (агент, промт на иврите) → проверка покрытия → экзаменатор → редактор → сборка → публикация.
 `progress.json` обновлять из свежего `.colpkg` пользователя.

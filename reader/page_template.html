@@ -40,6 +40,9 @@ h1 .ch { color: var(--ember); }
 .story { background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 22px clamp(16px, 5vw, 32px); }
 .story p { font-family: var(--f-text); font-size: 1.22rem; line-height: 1.85; margin: 0 0 1em; }
 .story p:last-of-type { margin-bottom: 0; }
+.story p.line { margin-bottom: 0.35em; }
+.story p.line b { font-family: var(--f-ui); font-size: 0.92em; color: var(--muted); margin-inline-end: 6px; }
+.story p.doc { font-family: var(--f-ui); font-size: 0.9rem; letter-spacing: 0.04em; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 6px; }
 .story p.quote { border-inline-start: 3px solid var(--ember); padding-inline-start: 14px; font-style: normal; color: var(--ink); }
 .nw { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: help; text-decoration: underline dotted var(--ember) 2px; text-underline-offset: 5px; }
 .nw:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
@@ -131,7 +134,12 @@ textarea { min-height: 4.5em; resize: vertical; }
   const noArt = s => s.split(' ').map(w => w.length > 2 && w[0] === 'ה' ? w.slice(1) : w).join(' ');
   // ע-ו-ר / ע.ו.ר / ע ו ר → עור; затем множество скелетов слов
   const toks = s => new Set(noArt(skel(norm(s).replace(/(^|\s)(\S)(?=\s\S(\s|$))/g, '$1$2\u0001').replace(/\u0001\s/g, '').replace(/(^|\s)(\S)\s(\S)(?=\s|$)/g, '$1$2$3'))).split(' ').filter(Boolean));
-  const covers = (given, ans) => { const g = toks(given); return [...toks(ans)].every(w => g.has(w)); };
+  // ответ засчитывается, если содержит все слова варианта, а лишние слова — только из вопроса или служебные
+  const FILLER = toks('שורש בניין בנין הפועל פועל הוא היא הם הן זה זאת השורש הבניין');
+  const covers = (given, ans, qtext) => {
+    const g = toks(given), a = toks(ans), ok = new Set([...a, ...FILLER, ...toks(qtext)]);
+    return [...a].every(w => g.has(w)) && [...g].every(w => ok.has(w));
+  };
 
   // glossary + tooltips
   const gl = $('#glossary');
@@ -260,7 +268,7 @@ textarea { min-height: 4.5em; resize: vertical; }
     }
     if (q.type === 'short') {
       const v = $('#' + q.id + '-ans').value;
-      const ok = !!norm(v) && q.answer.some(a => skel(a) === skel(v) || noArt(skel(a)) === noArt(skel(v)) || covers(v, a));
+      const ok = !!norm(v) && q.answer.some(a => skel(a) === skel(v) || noArt(skel(a)) === noArt(skel(v)) || covers(v, a, q.q));
       rec[q.id] = { type: 'short', given: v, pts: ok ? 1 : 0, max: 1 };
       showFb(q, ok ? 'ok' : 'no', ok ? 'נכון' : 'התשובה: ' + q.answer[0], q.explain);
       return ok ? 1 : 0;
