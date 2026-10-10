@@ -129,6 +129,9 @@ textarea { min-height: 4.5em; resize: vertical; }
   const norm = s => (s || '').replace(NQ, '').replace(/[״"׳'.,:;!?()\-–—־]/g, ' ').replace(/\s+/g, ' ').trim();
   const skel = s => norm(s).split(' ').map(w => w.replace(/ך/g,'כ').replace(/ם/g,'מ').replace(/ן/g,'נ').replace(/ף/g,'פ').replace(/ץ/g,'צ').replace(/(?!^)[וי]/g, '')).join(' ');
   const noArt = s => s.split(' ').map(w => w.length > 2 && w[0] === 'ה' ? w.slice(1) : w).join(' ');
+  // ע-ו-ר / ע.ו.ר / ע ו ר → עור; затем множество скелетов слов
+  const toks = s => new Set(noArt(skel(norm(s).replace(/(^|\s)(\S)(?=\s\S(\s|$))/g, '$1$2\u0001').replace(/\u0001\s/g, '').replace(/(^|\s)(\S)\s(\S)(?=\s|$)/g, '$1$2$3'))).split(' ').filter(Boolean));
+  const covers = (given, ans) => { const g = toks(given); return [...toks(ans)].every(w => g.has(w)); };
 
   // glossary + tooltips
   const gl = $('#glossary');
@@ -257,7 +260,7 @@ textarea { min-height: 4.5em; resize: vertical; }
     }
     if (q.type === 'short') {
       const v = $('#' + q.id + '-ans').value;
-      const ok = !!norm(v) && q.answer.some(a => skel(a) === skel(v) || noArt(skel(a)) === noArt(skel(v)));
+      const ok = !!norm(v) && q.answer.some(a => skel(a) === skel(v) || noArt(skel(a)) === noArt(skel(v)) || covers(v, a));
       rec[q.id] = { type: 'short', given: v, pts: ok ? 1 : 0, max: 1 };
       showFb(q, ok ? 'ok' : 'no', ok ? 'נכון' : 'התשובה: ' + q.answer[0], q.explain);
       return ok ? 1 : 0;
@@ -268,8 +271,12 @@ textarea { min-height: 4.5em; resize: vertical; }
   let sample = null, db = null;
   const rec = {};
   (async () => { try { db = await window.claude?.use?.('db'); } catch (e) { db = null; } })();
+  let lastSaved = '';
   async function saveResult(pts) {
     if (!db) return;
+    const sig = JSON.stringify(rec);
+    if (sig === lastSaved) { $('#saved').textContent = 'התוצאה כבר נשמרה.'; return; }
+    lastSaved = sig;
     try {
       await db.collection('results').add({ chapter: D.chapter, at: new Date().toISOString(), score: pts, max: MAX, items: rec });
       $('#saved').textContent = 'התוצאה נשמרה.';
@@ -312,7 +319,8 @@ ${JSON.stringify(todo, null, 1)}`;
         const q = openQs.find(x => x.id === r.id); if (!q) return;
         const sc = Math.max(0, Math.min(2, +r.score || 0)); pts += sc;
         Object.assign(rec[q.id] || (rec[q.id] = { type: 'open', max: 2 }), { pts: sc, feedback: r.feedback || '', fix: r.fix || '' });
-        showFb(q, sc === 2 ? 'ok' : sc ? 'part' : 'no', `${sc}/2`, r.feedback || '', r.fix ? 'תיקון: ' + r.fix : '');
+        const same = norm(r.fix) === norm(rec[q.id]?.given);
+        showFb(q, sc === 2 ? 'ok' : sc ? 'part' : 'no', `${sc}/2`, r.feedback || '', r.fix && !same ? 'תיקון: ' + r.fix : '');
       });
       return pts;
     } catch (e) {
