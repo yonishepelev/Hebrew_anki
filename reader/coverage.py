@@ -61,15 +61,16 @@ def load_known():
             for x in f:
                 words |= set(he_words(x))
         words |= set(pealim.get(str(r), ()))
-        if note.startswith('прил') or 'прил' in note[:12]:
+        if note.startswith(('прил', 'сущ', 'числ')) or 'прил' in note[:12]:
             for w in list(words):
                 words |= adj_forms(w)
         known |= words
     for x in ns.get('PARADIGMS', {}).values():
         for f in x:
             known |= set(he_words(f))
-    lw = ROOT / 'loanwords.txt'
-    if lw.exists():
+    for lw in (ROOT / 'loanwords.txt', ROOT / 'basic.txt'):
+        if not lw.exists():
+            continue
         for line in lw.read_text().splitlines():
             line = line.split('#')[0]
             for w in he_words(line):
