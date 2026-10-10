@@ -2197,14 +2197,19 @@ assert len({(h,r) for r,h,*_ in ALL}) == len(ALL)
 # Импорт поверх обновляет только их (сопоставление по GUID), прогресс не трогается.
 ONLY = {int(a) for a in sys.argv[1:]}
 assert ONLY <= {r for r,*_ in ALL}, f"нет таких номеров: {ONLY - {r for r,*_ in ALL}}"
+# Разведённые омографы: в поле Hebrew слово с огласовками (чтобы лицевые стороны различались),
+# под ним мелко — написание без огласовок (ключ GUID без "#2").
+NIQ = re.compile('[\u0591-\u05BD\u05BF-\u05C7]')
+def he_field(h, plain):
+    return h + f'<div style="font-size:30px;color:#888">{plain}</div>' if NIQ.search(h) else h
 for r,h,n,ru,note in ALL:
     if ONLY and r not in ONLY: continue
-    deck.add_note(genanki.Note(model=model, fields=[h,mark_stress(n),bidi(ru),bidi(note),ex_html(r)+gov_html(r)+forms_html(r),str(r)],
+    deck.add_note(genanki.Note(model=model, fields=[he_field(h,GUID_KEY.get(r,h)),mark_stress(n),bidi(ru),bidi(note),ex_html(r)+gov_html(r)+forms_html(r),str(r)],
         guid=genanki.guid_for(GUID_SEED,GUID_KEY.get(r,h),r), due=r,
         tags=[f"freq_{(r-1)//100*100+1:04d}"]+(["verb_form"] if r in VERB_FORM_RANKS else ["pron_form"] if r in PRON_FORM_RANKS else ["verb"] if r in FORMS else [])))
 for r,key,h,n,ru,note,ex in SPLIT:
     if ONLY and r not in ONLY: continue
-    deck.add_note(genanki.Note(model=model, fields=[h,mark_stress(n),bidi(ru),bidi(note),ex_block(ex),str(r)],
+    deck.add_note(genanki.Note(model=model, fields=[he_field(h,key.split("#")[0]),mark_stress(n),bidi(ru),bidi(note),ex_block(ex),str(r)],
         guid=genanki.guid_for(GUID_SEED,key,r), due=r, tags=[f"freq_{(r-1)//100*100+1:04d}"]))
 _ids = sorted(ONLY)
 _name = "_".join(map(str, _ids)) if len(_ids) <= 6 else f"{_ids[0]}-{_ids[-1]}_{len(_ids)}cards"
