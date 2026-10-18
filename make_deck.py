@@ -47,7 +47,7 @@ def forms_html(r):
     c = lambda s: f'<td class="hf">{s}</td>'
     return ('<table class="forms"><tr><th></th><th>я</th><th>он</th><th>она</th></tr>'
             f'<tr><th>прош.</th>{c(f[0])}{c(f[1])}{c(f[2])}</tr>'
-            + (f'<tr><th>наст.</th><td class="hf" colspan="3">{" · ".join(PRES[r])}</td></tr>' if r in PRES else '')
+            + (f'<tr><th>наст.</th><td class="hf pres" colspan="3">{" · ".join(PRES[r])}</td></tr>' if r in PRES else '')
             + f'<tr><th>буд.</th>{c(f[3])}{c(f[4])}{c(f[5])}</tr></table>')
 
 
@@ -1528,7 +1528,8 @@ PRES = {
 }
 
 css = """
-.card{font-family:sans-serif;font-size:22px;text-align:center;color:#222;background:#fafafa}
+.card{font-family:sans-serif;font-size:22px;text-align:center;color:#222;background:#fafafa;direction:ltr}
+.forms,.ex,.gov,.sim{direction:ltr}
 .nightMode.card{color:#eee;background:#1e1e1e}
 .he{direction:rtl;font-size:52px;font-family:'Noto Sans Hebrew','Arial Hebrew',sans-serif;margin:12px 0}
 .ru{font-size:30px;margin:12px 0}
@@ -1544,7 +1545,7 @@ bdi{unicode-bidi:isolate;display:inline-block;max-width:100%}
 .gi{margin:2px 0}
 .gh{font-size:21px;font-family:'Noto Sans Hebrew','Arial Hebrew',sans-serif}
 .pl{font-size:12px;color:#999}
-.hf{direction:rtl;font-size:24px;font-family:'Noto Sans Hebrew','Arial Hebrew',sans-serif}
+.hf{direction:rtl;font-size:20px;font-family:'Noto Sans Hebrew','Arial Hebrew',sans-serif}
 .st{color:#e53935}
 .nightMode .st{color:#ff7070}
 .rank{font-size:13px;color:#aaa;margin-top:18px}
@@ -1553,7 +1554,8 @@ bdi{unicode-bidi:isolate;display:inline-block;max-width:100%}
 .exh{font-size:21px;font-family:'Noto Sans Hebrew','Arial Hebrew',sans-serif}
 .exr{font-size:16px}
 .sim{margin:16px auto 4px;max-width:95%;border-top:1px solid #ddd;padding-top:6px}
-.simi{margin:8px 0;font-size:16px}
+.simi{margin:8px 0}
+.hf.pres{font-size:17px}
 .simd{font-size:14px;color:#888}
 """
 model = genanki.Model(
@@ -2069,7 +2071,7 @@ def ex_html(r): return ex_block(EX.get(r))
 # ───── «Похожие слова»: фраза «не путать…» из заметки уходит в отдельный блок в самом низу ─────
 # Форматы в заметке: «не путать: A (транскр.) — приметы; B (транскр.) — приметы — значение B»
 #                    «не путать с B — значение B»
-# Первая строка блока — само слово карточки с его переводом, далее — с чем не путать.
+# Первое слово блока — само слово карточки, далее — с чем не путать; у каждого: иврит / перевод / транскрипция и огласовка — отдельными строками.
 def split_sim(note, niq, ru):
     i = note.find("не путать")
     if i < 0: return note, ""
@@ -2088,7 +2090,7 @@ def split_sim(note, niq, ru):
         m = re.match(r"(\S+)\s*\((.+)\)$", he)
         word, tr = (m.group(1), m.group(2)) if m else (he, "")
         sub = " · ".join(x for x in (tr, hint) if x)
-        rows.append(f'<div class="simi"><bdi class="exh" dir="rtl">{word}</bdi> — {bidi(mean)}'
+        rows.append(f'<div class="simi"><div class="exh" dir="rtl">{word}</div><div class="exr">{bidi(mean)}</div>'
                     + (f'<div class="simd">{bidi(sub)}</div>' if sub else "") + '</div>')
     return head, '<div class="sim"><div class="gt">похожие слова</div>' + "".join(rows) + '</div>'
 
